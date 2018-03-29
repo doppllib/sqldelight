@@ -4,6 +4,7 @@ import android.arch.persistence.db.SupportSQLiteOpenHelper;
 import android.arch.persistence.db.framework.FrameworkSQLiteOpenHelperFactory;
 import android.support.test.InstrumentationRegistry;
 import com.squareup.sqldelight.android.SqlDelightDatabaseHelper;
+import com.squareup.sqldelight.android.SqlDelightUtil;
 import com.squareup.sqldelight.db.SqlDatabase;
 import java.util.Arrays;
 import java.util.List;
@@ -24,12 +25,8 @@ public class IntegrationTests {
   private SqliteKeywordsQueries keywordsQueries;
 
   @Before public void before() {
-    SupportSQLiteOpenHelper.Configuration configuration = SupportSQLiteOpenHelper.Configuration.builder(InstrumentationRegistry.getContext())
-        .callback(new SqlDelightDatabaseHelper.Callback(QueryWrapper.Companion, 1))
-        .build();
-    database = new SqlDelightDatabaseHelper(new FrameworkSQLiteOpenHelperFactory()
-        .create(configuration));
-
+    database = SqlDelightUtil.wrapContext(QueryWrapper.Companion,
+        InstrumentationRegistry.getContext(), 1);
     queryWrapper = new QueryWrapper(database);
     personQueries = queryWrapper.getPersonQueries();
     keywordsQueries = queryWrapper.getSqliteKeywordsQueries();
