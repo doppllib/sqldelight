@@ -1,0 +1,59 @@
+apply plugin: 'kotlin-platform-common'
+
+//archivesBaseName = 'sqldelight-multiplatform-driver'
+
+dependencies {
+    implementation deps.kotlin.stdlibCommon
+    implementation project(':runtime:sqldelight-runtime')
+    implementation "co.touchlab.knarch:knarch-common:0.1"
+}
+
+repositories {
+    mavenCentral()
+    google()
+    jcenter()
+    maven { url j2objcMavenDeploy }
+}
+
+buildscript {
+    repositories {
+        mavenCentral()
+        maven {
+            url  "https://dl.bintray.com/jetbrains/kotlin-native-dependencies"
+        }
+    }
+
+    dependencies {
+        classpath "org.jetbrains.kotlin:kotlin-native-gradle-plugin:${versions.konan}"
+    }
+}
+
+apply plugin: 'konan'
+
+konan.targets = ['iphone', 'iphone_sim', 'macos_x64']
+
+konanArtifacts {
+    library("sqldelight-driver"){
+        srcDir 'src/main/kotlin'
+        srcDir 'src/main/kotlinios'
+        target('iphone') {
+            libraries {
+                useRepos '../../lib/knarch/kotlin/ios_arm64', '../sqldelight-runtime/build/konan/libs/ios_arm64'
+                klibs 'knarch', 'sqldelight'
+            }
+        }
+        target('iphone_sim') {
+            libraries {
+                useRepos '../../lib/knarch/kotlin/ios_x64', '../sqldelight-runtime/build/konan/libs/ios_x64'
+                klibs 'knarch', 'sqldelight'
+            }
+        }
+        target('macos_x64') {
+            libraries {
+                useRepos '../../lib/knarch/kotlin/macos_x64', '../sqldelight-runtime/build/konan/libs/macos_x64'
+                klibs 'knarch', 'sqldelight'
+            }
+        }
+        enableMultiplatform true
+    }
+}

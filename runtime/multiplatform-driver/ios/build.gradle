@@ -1,0 +1,54 @@
+buildscript {
+    repositories {
+        mavenCentral()
+        maven {
+            url  "https://dl.bintray.com/jetbrains/kotlin-native-dependencies"
+        }
+    }
+
+    dependencies {
+        classpath "org.jetbrains.kotlin:kotlin-native-gradle-plugin:${versions.konan}"
+    }
+}
+
+apply plugin: 'konan'
+
+group = 'com.squareup.sqldelight.multiplatform'
+
+konan.targets = [/*'iphone', */'iphone_sim'/*, 'macos_x64'*/]
+
+konanArtifacts {
+    library(/*"sqldelight-multiplatform"*/"qwertqwert"){
+
+        /*target('iphone_sim') {
+            libraries {
+                nativeLibraries '../../../cpp/knarch/build/ios_x64/tlruntime.bc'
+                useRepos '../../../kotlin/knarch-ios/build/konan/libs/ios_x64'
+                klibs 'knarch'
+            }
+        }
+        */
+
+        target('iphone_sim') {
+            libraries {
+//                useRepos '../../sqldelight-runtime/build/konan/libs/ios_x64', '../../lib/knarch/kotlin/ios_x64'
+//                klibs 'sqldelight'
+                useRepos '../../../lib/knarch/kotlin/ios_x64', '../../sqldelight-runtime/build/konan/libs/ios_x64'
+                klibs 'knarch', 'sqldelight'
+            }
+        }
+
+
+
+        enableMultiplatform true
+    }
+}
+
+dependencies {
+    expectedBy project(':runtime:multiplatform-driver')
+//    expectedBy project(':runtime:multiplatform-driver')
+}
+
+repositories {
+    maven { url 'https://oss.sonatype.org/content/repositories/snapshots/' }
+}

@@ -1,76 +1,70 @@
-package com.squareup.sqldelight.ios
+package com.squareup.sqldelight.multiplatform
 
-//import android.arch.persistence.db.SupportSQLiteDatabase
-//import android.arch.persistence.db.SupportSQLiteOpenHelper
-//import android.arch.persistence.db.SupportSQLiteProgram
-//import android.arch.persistence.db.SupportSQLiteQuery
-//import android.arch.persistence.db.SupportSQLiteStatement
-//import android.arch.persistence.db.framework.FrameworkSQLiteOpenHelperFactory
-
-import co.touchlab.knarch.db.*
-import co.touchlab.knarch.db.sqlite.*
+import co.touchlab.multiplatform.architecture.db.Cursor
+import co.touchlab.multiplatform.architecture.db.sqlite.*
 import co.touchlab.multiplatform.architecture.threads.ThreadLocal
 import com.squareup.sqldelight.Transacter
 import com.squareup.sqldelight.db.SqlDatabase
 import com.squareup.sqldelight.db.SqlDatabaseConnection
 import com.squareup.sqldelight.db.SqlPreparedStatement
+import com.squareup.sqldelight.db.SqlResultSet
 import com.squareup.sqldelight.db.SqlPreparedStatement.Type.DELETE
 import com.squareup.sqldelight.db.SqlPreparedStatement.Type.EXEC
 import com.squareup.sqldelight.db.SqlPreparedStatement.Type.INSERT
 import com.squareup.sqldelight.db.SqlPreparedStatement.Type.SELECT
 import com.squareup.sqldelight.db.SqlPreparedStatement.Type.UPDATE
-import com.squareup.sqldelight.db.SqlResultSet
 
-class SqlDelightDatabase(
-        private val sqliteDb: SQLiteDatabase
+class SqlDelightDatabaseHelper(
+        private val openHelper: SQLiteOpenHelper
 ) : SqlDatabase {
     private val transactions = ThreadLocal<SqlDelightDatabaseConnection.Transaction>()
 
     override fun getConnection(): SqlDatabaseConnection {
-        return SqlDelightDatabaseConnection(sqliteDb, transactions)
+        return SqlDelightDatabaseConnection(openHelper.getWritableDatabase(), transactions)
     }
 
     override fun close() {
-        return sqliteDb.close()
+        return openHelper.close()
     }
 
-    /*class Callback(
+    class Callback(
             private val helper: SqlDatabase.Helper
-    ) : SupportSQLiteOpenHelper.Callback(helper.version) {
-        override fun onCreate(db: SupportSQLiteDatabase) {
+    ) : PlatformSQLiteOpenHelperCallback(helper.version) {
+        override fun onCreate(db: SQLiteDatabase) {
             helper.onCreate(SqlDelightDatabaseConnection(db, ThreadLocal()))
         }
 
         override fun onUpgrade(
-                db: SupportSQLiteDatabase,
+                db: SQLiteDatabase,
                 oldVersion: Int,
                 newVersion: Int
         ) {
             helper.onMigrate(SqlDelightDatabaseConnection(db, ThreadLocal()), oldVersion, newVersion)
         }
-    }*/
+    }
 }
-/*
+
+/**
+ * Wraps [database] into a [SqlDatabase] usable by a SqlDelight generated QueryWrapper.
+ */
 fun SqlDatabase.Helper.create(
-        database: SupportSQLiteDatabase
+        database: SQLiteDatabase
 ): SqlDatabase {
     return SqlDelightInitializationHelper(database)
 }
 
+/**
+ * Wraps [context] into a [SqlDatabase] usable by a SqlDelight generated QueryWrapper.
+ */
 fun SqlDatabase.Helper.create(
-        context: Context,
         name: String? = null,
-        callback: SupportSQLiteOpenHelper.Callback = SqlDelightDatabaseHelper.Callback(this)
+        callback: PlatformSQLiteOpenHelperCallback = SqlDelightDatabaseHelper.Callback(this)
 ): SqlDatabase {
-    val configuration = SupportSQLiteOpenHelper.Configuration.builder(context)
-            .callback(callback)
-            .name(name)
-            .build()
-    return SqlDelightDatabaseHelper(FrameworkSQLiteOpenHelperFactory().create(configuration))
-}*/
+    return SqlDelightDatabaseHelper(createOpenHelper(name, callback, null))
+}
 
-/*private class SqlDelightInitializationHelper(
-        private val database: SupportSQLiteDatabase
+private class SqlDelightInitializationHelper(
+        private val database: SQLiteDatabase
 ) : SqlDatabase {
     override fun getConnection(): SqlDatabaseConnection {
         return SqlDelightDatabaseConnection(database, ThreadLocal())
@@ -79,7 +73,7 @@ fun SqlDatabase.Helper.create(
     override fun close() {
         throw IllegalStateException("Tried to call close during initialization")
     }
-}*/
+}
 
 private class SqlDelightDatabaseConnection(
         private val database: SQLiteDatabase,
@@ -115,7 +109,7 @@ private class SqlDelightDatabaseConnection(
         }
     }
 
-    override fun prepareStatement(sql: String, type: SqlPreparedStatement.Type) = when (type) {
+    override fun prepareStatement(sql: String, type: SqlPreparedStatement.Type) = when(type) {
         SELECT -> SqlDelightQuery(sql, database)
         INSERT, UPDATE, DELETE, EXEC -> SqlDelightPreparedStatement(database.compileStatement(sql), type)
     }
@@ -179,17 +173,17 @@ private class SqlDelightQuery(
 
     override fun execute() = throw UnsupportedOperationException()
 
-    override fun executeQuery():SqlResultSet {
+    override fun executeQuery() :SqlResultSet {
 
-        val cursorFactory = object : SQLiteDatabase.CursorFactory {
+        val cursorFactory = object : CursorFactory {
             override fun newCursor(db: SQLiteDatabase,
-                          masterQuery: SQLiteCursorDriver, editTable: String?,
-                          query: SQLiteQuery): Cursor {
+                                   masterQuery: SQLiteCursorDriver, editTable: String?,
+                                   query: SQLiteQuery): Cursor {
                 for (action in binds.values) {
                     action(query)
                 }
 
-                return SQLiteCursor(masterQuery, query)
+                return createSQLiteCursor(masterQuery, query)
             }
         }
 
@@ -200,11 +194,20 @@ private class SqlDelightQuery(
                 null))
     }
 
+    /*override fun bindTo(statement: SQLiteProgram) {
+        for (action in binds.values) {
+            action(statement)
+        }
+    }*/
+
+//    override fun getSql() = sql
+
     override fun toString() = sql
+
+    /*override fun getArgCount(): Int {
+        throw UnsupportedOperationException("Not implemented")
+    }*/
 }
-
-
-
 
 private class SqlDelightResultSet(
         private val cursor: Cursor
@@ -216,3 +219,5 @@ private class SqlDelightResultSet(
     override fun getDouble(index: Int) = cursor.getDouble(index)
     override fun close() = cursor.close()
 }
+
+expect fun createSQLiteCursor(masterQuery: SQLiteCursorDriver, query: SQLiteQuery):Cursor
