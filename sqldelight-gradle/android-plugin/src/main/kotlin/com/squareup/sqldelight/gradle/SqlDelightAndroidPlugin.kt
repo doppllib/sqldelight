@@ -25,6 +25,7 @@ import com.android.build.gradle.options.SyncOptions.EvaluationMode.STANDARD
 import com.android.builder.core.DefaultManifestParser
 import com.squareup.sqldelight.VERSION
 import com.squareup.sqldelight.core.SqlDelightPropertiesFile
+import com.squareup.sqldelight.core.lang.MigrationFileType
 import com.squareup.sqldelight.core.lang.SqlDelightFileType
 import org.gradle.api.DomainObjectSet
 import org.gradle.api.Project
@@ -33,6 +34,22 @@ import java.io.File
 class SqlDelightAndroidPlugin : SqlDelightPlugin() {
   override fun apply(project: Project) {
     project.extensions.create("sqldelight", SqlDelightExtension::class.java)
+    if (!project.plugins.hasPlugin("android")) {
+      throw IllegalStateException(
+          """
+      Kotlin projects need to apply the sqldelight kotlin plugin:
+
+      buildscript {
+        dependencies {
+          classpath "com.squareup.sqldelight:gradle-plugin:$VERSION
+        }
+      }
+
+      apply plugin: "com.squareup.sqldelight"
+      """.trimIndent()
+      )
+    }
+
     project.plugins.all {
       when (it) {
         is AppPlugin -> {
@@ -52,8 +69,6 @@ class SqlDelightAndroidPlugin : SqlDelightPlugin() {
     if (System.getProperty("sqldelight.skip.runtime") != "true") {
       compileDeps.add(project.dependencies.create("com.squareup.sqldelight:runtime-jdk:$VERSION"))
     }
-    compileDeps.add(
-        project.dependencies.create("com.android.support:support-annotations:23.1.1"))
 
     var packageName: String? = null
     val sourceSets = mutableListOf<List<String>>()
@@ -67,6 +82,7 @@ class SqlDelightAndroidPlugin : SqlDelightPlugin() {
       task.description = "Generate Android interfaces for working with ${it.name} database tables"
       task.source(it.sourceSets.map { "src/${it.name}/${SqlDelightFileType.FOLDER_NAME}" })
       task.include("**${File.separatorChar}*.${SqlDelightFileType.defaultExtension}")
+      task.include("**${File.separatorChar}*.${MigrationFileType.defaultExtension}")
       task.packageName = it.packageName(project)
       task.sourceFolders = it.sourceSets.map { File("${project.projectDir}/src/${it.name}/${SqlDelightFileType.FOLDER_NAME}") }
 

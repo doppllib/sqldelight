@@ -1,12 +1,22 @@
+apply plugin: 'maven-publish'
 apply plugin: 'kotlin-platform-common'
+apply plugin: 'com.jfrog.bintray'
 
-//archivesBaseName = 'sqldelight-multiplatform-driver'
+archivesBaseName = 'sqldelight-multiplatform-driver'
 
 dependencies {
     implementation deps.kotlin.stdlibCommon
     implementation project(':runtime:sqldelight-runtime')
     implementation "co.touchlab.knarch:knarch-common:0.1"
 }
+
+group = 'com.squareup.sqldelight'
+version = "0.1"
+
+ext.bintrayGitUrl = 'https://github.com/touchlab/sqldelight'
+
+apply from: "https://raw.githubusercontent.com/doppllib/gradlescripts/master/kotlinpublish.gradle"
+apply from: "https://raw.githubusercontent.com/doppllib/gradlescripts/master/bintray.gradle"
 
 repositories {
     mavenCentral()
@@ -25,6 +35,7 @@ buildscript {
 
     dependencies {
         classpath "org.jetbrains.kotlin:kotlin-native-gradle-plugin:${versions.konan}"
+        classpath 'com.jfrog.bintray.gradle:gradle-bintray-plugin:1.7.3'
     }
 }
 
@@ -36,6 +47,14 @@ konanArtifacts {
     library("sqldelight-driver"){
         srcDir 'src/main/kotlin'
         srcDir 'src/main/kotlinios'
+
+        //This should work but something is wrong with either the plugin or the config.
+        //Hard coding the libs and repos will fail when building. Must comment out
+        //this project in settings.gradle, build, then uncomment and build. Ugh.
+        /*libraries {
+            artifact project(':runtime:sqldelight-runtime'), 'sqldelight'
+        }*/
+
         target('iphone') {
             libraries {
                 useRepos '../../lib/knarch/kotlin/ios_arm64', '../sqldelight-runtime/build/konan/libs/ios_arm64'

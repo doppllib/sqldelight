@@ -109,7 +109,10 @@ private class SqlDelightDatabaseConnection(
         }
     }
 
-    override fun prepareStatement(sql: String, type: SqlPreparedStatement.Type) = when(type) {
+    override fun prepareStatement(
+            sql: String,
+            type: SqlPreparedStatement.Type,
+            parameters: Int) = when(type) {
         SELECT -> SqlDelightQuery(sql, database)
         INSERT, UPDATE, DELETE, EXEC -> SqlDelightPreparedStatement(database.compileStatement(sql), type)
     }
@@ -194,19 +197,7 @@ private class SqlDelightQuery(
                 null))
     }
 
-    /*override fun bindTo(statement: SQLiteProgram) {
-        for (action in binds.values) {
-            action(statement)
-        }
-    }*/
-
-//    override fun getSql() = sql
-
     override fun toString() = sql
-
-    /*override fun getArgCount(): Int {
-        throw UnsupportedOperationException("Not implemented")
-    }*/
 }
 
 private class SqlDelightResultSet(

@@ -3,13 +3,9 @@ rootProject.name = 'sqldelight'
 //include ':runtime:android-driver'
 //include ':runtime:ios-driver'
 
-include ':runtime:multiplatform-driver'
-//include ':runtime:multiplatform-driver:ios'
-
 include ':runtime:rxjava2-extensions'
 include ':runtime:sqldelight-runtime'
 include ':runtime:sqldelight-runtime:jdk'
-//include ':runtime:sqldelight-runtime:ios'
 include ':runtime:sqldelight-runtime:js'
 include ':runtime:sqlite-driver'
 include ':sqldelight-core'
@@ -17,9 +13,11 @@ include ':sqldelight-core-integration-tests'
 //include ':sqldelight-gradle:android-plugin'
 include ':sqldelight-gradle:plugin'
 include ':sqldelight-idea-plugin'
-//include 'sqldelight-sample'
+include ':sqldelight-sample'
 include ':sqldelight-test-util'
 include ':sqlite-migrations'
+
+include ':runtime:multiplatform-driver'
 
 //def kotlinNativeDir = "/Users/kgalligan/temp4/kotlin-native"//System.getenv('KOTLIN_NATIVE_DIR')
 //
