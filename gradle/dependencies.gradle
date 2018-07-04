@@ -1,6 +1,6 @@
 ext.versions = [
     kotlin: '1.2.50',
-    konan: '0.8-dev-2538',
+    konan: '0.8-dev-2632',
     compileSdk: 27,
     idea: '2018.1',
     dokka: '0.9.15',

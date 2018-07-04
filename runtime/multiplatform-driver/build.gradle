@@ -1,6 +1,4 @@
-apply plugin: 'maven-publish'
 apply plugin: 'kotlin-platform-common'
-apply plugin: 'com.jfrog.bintray'
 
 archivesBaseName = 'sqldelight-multiplatform-driver'
 
@@ -10,14 +8,19 @@ dependencies {
     implementation "co.touchlab.knarch:knarch-common:0.5-alpha1"
 }
 
+apply plugin: 'konan'
+apply plugin: 'maven-publish'
+apply plugin: 'com.jfrog.bintray'
+
 ext.artifactId = archivesBaseName
 version = VERSION_NAME
 group = GROUP
 
 ext.bintrayGitUrl = 'https://github.com/touchlab/sqldelight'
 
-apply from: "https://raw.githubusercontent.com/doppllib/gradlescripts/master/kotlinpublish.gradle"
-apply from: "https://raw.githubusercontent.com/doppllib/gradlescripts/master/kotlinbintray.gradle"
+apply from: "${rootDir}/gradle/nativepublish.gradle"
+//apply from: "https://raw.githubusercontent.com/doppllib/gradlescripts/master/kotlinpublish.gradle"
+//apply from: "https://raw.githubusercontent.com/doppllib/gradlescripts/master/kotlinbintray.gradle"
 
 repositories {
     mavenCentral()
@@ -36,16 +39,14 @@ buildscript {
 
     dependencies {
         classpath "org.jetbrains.kotlin:kotlin-native-gradle-plugin:${versions.konan}"
-        classpath 'com.jfrog.bintray.gradle:gradle-bintray-plugin:1.7.3'
+        classpath 'com.jfrog.bintray.gradle:gradle-bintray-plugin:1.8.1-SNAPSHOT'
     }
 }
-
-apply plugin: 'konan'
 
 konan.targets = ['iphone', 'iphone_sim', 'macos_x64']
 
 konanArtifacts {
-    library("SqldelightMultiplatformDriver"){
+    library("sqldelightmultiplatformdriverios"){
         srcDir 'src/main/kotlin'
         srcDir 'src/main/kotlinios'
 
@@ -56,24 +57,33 @@ konanArtifacts {
             artifact project(':runtime:sqldelight-runtime'), 'sqldelight'
         }*/
 
-        target('iphone') {
+        dependencies{
+            artifactsqldelightmultiplatformdriverios "co.touchlab.knarch:knarch:0.5-alpha1"
+//            artifactsqldelightmultiplatformdriverios_ios_arm64 "co.touchlab.knarch:knarch_knarch_ios_arm64:0.5-alpha1"
+//            artifactsqldelightmultiplatformdriverios_macos_x64 "co.touchlab.knarch:knarch_knarch_macos_x64:0.5-alpha1"
+            artifactsqldelightmultiplatformdriverios "com.squareup.sqldelight:sqldelightruntimeios:1.0.0-alpha4"
+//            artifactsqldelightmultiplatformdriverios_ios_arm64 "com.squareup.sqldelight:sqldelightruntimeios_sqldelightruntimeios_ios_arm64:1.0.0-alpha4"
+//            artifactsqldelightmultiplatformdriverios_macos_x64 "com.squareup.sqldelight:sqldelightruntimeios_sqldelightruntimeios_macos_x64:1.0.0-alpha4"
+        }
+
+        /*target('iphone') {
             libraries {
                 useRepos '../../lib/knarch/kotlin/ios_arm64', '../sqldelight-runtime/build/konan/libs/ios_arm64'
-                klibs 'knarch', 'SqldelightRuntime'
+                klibs 'knarch', 'sqldelightruntimeios'
             }
         }
         target('iphone_sim') {
             libraries {
                 useRepos '../../lib/knarch/kotlin/ios_x64', '../sqldelight-runtime/build/konan/libs/ios_x64'
-                klibs 'knarch', 'SqldelightRuntime'
+                klibs 'knarch', 'sqldelightruntimeios'
             }
         }
         target('macos_x64') {
             libraries {
                 useRepos '../../lib/knarch/kotlin/macos_x64', '../sqldelight-runtime/build/konan/libs/macos_x64'
-                klibs 'knarch', 'SqldelightRuntime'
+                klibs 'knarch', 'sqldelightruntimeios'
             }
-        }
+        }*/
         enableMultiplatform true
     }
 }

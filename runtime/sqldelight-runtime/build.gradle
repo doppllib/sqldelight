@@ -1,7 +1,6 @@
 apply plugin: 'kotlin-platform-common'
 apply plugin: 'org.jetbrains.dokka'
 
-
 archivesBaseName = 'sqldelight-runtime-common'
 
 dependencies {
@@ -16,7 +15,9 @@ task dokkaJavadoc(type: org.jetbrains.dokka.gradle.DokkaTask) {
   outputDirectory = "$buildDir/dokkaJavadoc"
 }
 
+apply plugin: 'konan'
 apply plugin: 'maven-publish'
+apply plugin: 'com.jfrog.bintray'
 
 ext.artifactId = archivesBaseName
 version = VERSION_NAME
@@ -24,8 +25,9 @@ group = GROUP
 
 ext.bintrayGitUrl = 'https://github.com/touchlab/sqldelight'
 
-apply from: "https://raw.githubusercontent.com/doppllib/gradlescripts/master/kotlinpublish.gradle"
-apply from: "https://raw.githubusercontent.com/doppllib/gradlescripts/master/kotlinbintray.gradle"
+apply from: "${rootDir}/gradle/nativepublish.gradle"
+//apply from: "https://raw.githubusercontent.com/doppllib/gradlescripts/master/kotlinpublish.gradle"
+//apply from: "https://raw.githubusercontent.com/doppllib/gradlescripts/master/kotlinbintray.gradle"
 
 //apply from: "$rootDir/gradle/gradle-mvn-push.gradle"
 
@@ -39,16 +41,16 @@ buildscript {
 
   dependencies {
     classpath "org.jetbrains.kotlin:kotlin-native-gradle-plugin:${versions.konan}"
-    classpath 'com.jfrog.bintray.gradle:gradle-bintray-plugin:1.7.3'
+    classpath 'com.jfrog.bintray.gradle:gradle-bintray-plugin:1.8.1-SNAPSHOT'
   }
 }
 
-apply plugin: 'konan'
+
 
 konan.targets = ['iphone', 'iphone_sim', 'macos_x64']
 
 konanArtifacts {
-  library("SqldelightRuntime"){
+  library("sqldelightruntimeios"){
     enableMultiplatform true
   }
 }

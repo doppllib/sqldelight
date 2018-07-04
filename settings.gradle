@@ -19,6 +19,8 @@ include ':sqlite-migrations'
 
 include ':runtime:multiplatform-driver'
 
+enableFeaturePreview('GRADLE_METADATA')
+
 //def kotlinNativeDir = "/Users/kgalligan/temp4/kotlin-native"//System.getenv('KOTLIN_NATIVE_DIR')
 //
 //includeBuild "${kotlinNativeDir}/shared"
