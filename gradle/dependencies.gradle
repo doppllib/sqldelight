@@ -11,6 +11,7 @@ ext.versions = [
     schemaCrawler: '14.16.04.01-java7',
     support: '27.1.1',
     sqldelight: '1.0.0-alpha4',
+    knarch: '0.6-alpha1'
 ]
 
 ext.deps = [

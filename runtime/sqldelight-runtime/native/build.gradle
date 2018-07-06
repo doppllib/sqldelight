@@ -1,7 +1,7 @@
 apply plugin: 'konan'
 apply plugin: 'maven-publish'
 
-archivesBaseName = 'sqldelight-multiplatform-driver-ios'
+archivesBaseName = 'sqldelight-runtime-native'
 
 ext.artifactId = archivesBaseName
 version = VERSION_NAME
@@ -11,7 +11,7 @@ ext.bintrayGitUrl = 'https://github.com/touchlab/sqldelight'
 
 apply from: "${rootDir}/gradle/knarchstuff/configpublishnative.gradle"
 
-if(project.hasProperty('deployIosDriver')) {
+if(project.hasProperty('deployIosRuntime')) {
     apply from: "${rootDir}/gradle/knarchstuff/configbintray.gradle"
 }
 
@@ -41,19 +41,8 @@ buildscript {
 konan.targets = ['iphone', 'iphone_sim', 'macos_x64']
 
 konanArtifacts {
-    library("sqldelightmultiplatformdriverios"){
+    library("sqldelightruntimeios"){
         srcDir '../src/main/kotlin'
-        srcDir '../src/main/kotlinios'
-
-        dependencies{
-            artifactsqldelightmultiplatformdriverios "co.touchlab.knarch:knarch:${versions.knarch}"
-            artifactsqldelightmultiplatformdriverios project(":runtime:sqldelight-runtime:native")
-        }
-
         enableMultiplatform true
     }
 }
-
-tasks
-        .getByName("build")
-        .dependsOn(":runtime:sqldelight-runtime:native:build")

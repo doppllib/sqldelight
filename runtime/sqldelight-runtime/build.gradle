@@ -15,42 +15,16 @@ task dokkaJavadoc(type: org.jetbrains.dokka.gradle.DokkaTask) {
   outputDirectory = "$buildDir/dokkaJavadoc"
 }
 
-apply plugin: 'konan'
-apply plugin: 'maven-publish'
-apply plugin: 'com.jfrog.bintray'
+//apply from: "$rootDir/gradle/gradle-mvn-push.gradle"
 
-ext.artifactId = archivesBaseName
+//TODO: This stuff exists just to get 'sqldelight-runtime-common' in multiplatform driver dependencies
+//remove with a better method
+apply plugin: 'maven-publish'
+
+ext.artifactId = 'runtime-common'
 version = VERSION_NAME
 group = GROUP
 
 ext.bintrayGitUrl = 'https://github.com/touchlab/sqldelight'
 
-apply from: "${rootDir}/gradle/nativepublish.gradle"
-//apply from: "https://raw.githubusercontent.com/doppllib/gradlescripts/master/kotlinpublish.gradle"
-//apply from: "https://raw.githubusercontent.com/doppllib/gradlescripts/master/kotlinbintray.gradle"
-
-//apply from: "$rootDir/gradle/gradle-mvn-push.gradle"
-
-buildscript {
-  repositories {
-    mavenCentral()
-    maven {
-      url  "https://dl.bintray.com/jetbrains/kotlin-native-dependencies"
-    }
-  }
-
-  dependencies {
-    classpath "org.jetbrains.kotlin:kotlin-native-gradle-plugin:${versions.konan}"
-    classpath 'com.jfrog.bintray.gradle:gradle-bintray-plugin:1.8.1-SNAPSHOT'
-  }
-}
-
-
-
-konan.targets = ['iphone', 'iphone_sim', 'macos_x64']
-
-konanArtifacts {
-  library("sqldelightruntimeios"){
-    enableMultiplatform true
-  }
-}
+apply from: "https://raw.githubusercontent.com/doppllib/gradlescripts/master/kotlinpublish.gradle"

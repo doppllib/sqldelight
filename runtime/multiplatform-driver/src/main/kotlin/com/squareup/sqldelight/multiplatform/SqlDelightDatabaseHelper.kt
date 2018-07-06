@@ -58,9 +58,10 @@ fun SqlDatabase.Helper.create(
  */
 fun SqlDatabase.Helper.create(
         name: String? = null,
+        openHelperFactory: NativeOpenHelperFactory,
         callback: PlatformSQLiteOpenHelperCallback = SqlDelightDatabaseHelper.Callback(this)
 ): SqlDatabase {
-    return SqlDelightDatabaseHelper(createOpenHelper(name, callback, null))
+    return SqlDelightDatabaseHelper(openHelperFactory.createOpenHelper(name, callback, null))
 }
 
 private class SqlDelightInitializationHelper(

@@ -1,16 +1,7 @@
 apply plugin: 'kotlin-platform-common'
+apply plugin: 'maven-publish'
 
 archivesBaseName = 'sqldelight-multiplatform-driver'
-
-dependencies {
-    implementation deps.kotlin.stdlibCommon
-    implementation project(':runtime:sqldelight-runtime')
-    implementation "co.touchlab.knarch:knarch-common:0.5-alpha1"
-}
-
-apply plugin: 'konan'
-apply plugin: 'maven-publish'
-apply plugin: 'com.jfrog.bintray'
 
 ext.artifactId = archivesBaseName
 version = VERSION_NAME
@@ -18,15 +9,13 @@ group = GROUP
 
 ext.bintrayGitUrl = 'https://github.com/touchlab/sqldelight'
 
-apply from: "${rootDir}/gradle/nativepublish.gradle"
-//apply from: "https://raw.githubusercontent.com/doppllib/gradlescripts/master/kotlinpublish.gradle"
-//apply from: "https://raw.githubusercontent.com/doppllib/gradlescripts/master/kotlinbintray.gradle"
-
 repositories {
-    mavenCentral()
-    google()
     jcenter()
-    maven { url j2objcMavenDeploy }
+    google()
+    mavenCentral()
+    maven { url "https://kotlin.bintray.com/kotlinx" }
+    maven { url 'https://oss.sonatype.org/content/repositories/snapshots/' }
+    maven { url 'https://dl.bintray.com/touchlabpublic/kotlin' }
 }
 
 buildscript {
@@ -38,52 +27,19 @@ buildscript {
     }
 
     dependencies {
-        classpath "org.jetbrains.kotlin:kotlin-native-gradle-plugin:${versions.konan}"
-        classpath 'com.jfrog.bintray.gradle:gradle-bintray-plugin:1.8.1-SNAPSHOT'
+        classpath 'com.jfrog.bintray.gradle:gradle-bintray-plugin:1.8.2-SNAPSHOT'
     }
 }
 
-konan.targets = ['iphone', 'iphone_sim', 'macos_x64']
+apply from: "${rootDir}/gradle/knarchstuff/configpublish.gradle"
 
-konanArtifacts {
-    library("sqldelightmultiplatformdriverios"){
-        srcDir 'src/main/kotlin'
-        srcDir 'src/main/kotlinios'
+if(project.hasProperty('deployCommon')) {
+    apply from: "${rootDir}/gradle/knarchstuff/configbintray.gradle"
+}
 
-        //This should work but something is wrong with either the plugin or the config.
-        //Hard coding the libs and repos will fail when building. Must comment out
-        //this project in settings.gradle, build, then uncomment and build. Ugh.
-        /*libraries {
-            artifact project(':runtime:sqldelight-runtime'), 'sqldelight'
-        }*/
-
-        dependencies{
-            artifactsqldelightmultiplatformdriverios "co.touchlab.knarch:knarch:0.5-alpha1"
-//            artifactsqldelightmultiplatformdriverios_ios_arm64 "co.touchlab.knarch:knarch_knarch_ios_arm64:0.5-alpha1"
-//            artifactsqldelightmultiplatformdriverios_macos_x64 "co.touchlab.knarch:knarch_knarch_macos_x64:0.5-alpha1"
-            artifactsqldelightmultiplatformdriverios "com.squareup.sqldelight:sqldelightruntimeios:1.0.0-alpha4"
-//            artifactsqldelightmultiplatformdriverios_ios_arm64 "com.squareup.sqldelight:sqldelightruntimeios_sqldelightruntimeios_ios_arm64:1.0.0-alpha4"
-//            artifactsqldelightmultiplatformdriverios_macos_x64 "com.squareup.sqldelight:sqldelightruntimeios_sqldelightruntimeios_macos_x64:1.0.0-alpha4"
-        }
-
-        /*target('iphone') {
-            libraries {
-                useRepos '../../lib/knarch/kotlin/ios_arm64', '../sqldelight-runtime/build/konan/libs/ios_arm64'
-                klibs 'knarch', 'sqldelightruntimeios'
-            }
-        }
-        target('iphone_sim') {
-            libraries {
-                useRepos '../../lib/knarch/kotlin/ios_x64', '../sqldelight-runtime/build/konan/libs/ios_x64'
-                klibs 'knarch', 'sqldelightruntimeios'
-            }
-        }
-        target('macos_x64') {
-            libraries {
-                useRepos '../../lib/knarch/kotlin/macos_x64', '../sqldelight-runtime/build/konan/libs/macos_x64'
-                klibs 'knarch', 'sqldelightruntimeios'
-            }
-        }*/
-        enableMultiplatform true
-    }
+dependencies {
+    implementation deps.kotlin.stdlibCommon
+    implementation project(':runtime:sqldelight-runtime')
+//    implementation "${GROUP}:sqldelight-runtime-common:${versions.sqldelight}"
+    implementation "co.touchlab.knarch:knarch-common:${versions.knarch}"
 }
