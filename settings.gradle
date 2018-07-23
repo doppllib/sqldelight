@@ -20,5 +20,6 @@ include ':sqlite-migrations'
 
 include ':runtime:multiplatform-driver'
 include ':runtime:multiplatform-driver:ios'
+include ':runtime:multiplatform-driver:android'
 
 enableFeaturePreview('GRADLE_METADATA')

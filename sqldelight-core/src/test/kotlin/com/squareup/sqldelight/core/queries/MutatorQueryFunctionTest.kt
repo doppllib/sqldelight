@@ -44,12 +44,10 @@ class MutatorQueryFunctionTest {
     val generator = MutatorQueryGenerator(file.namedMutators.first())
 
     assertThat(generator.value().toString()).isEqualTo("""
-      |private val insertData: InsertData by lazy {
-      |        InsertData(database.getConnection().prepareStatement(""${'"'}
+      |private val insertData: InsertData = InsertData(database.getConnection().prepareStatement(""${'"'}
       |        |INSERT INTO data
       |        |VALUES (?, ?)
       |        ""${'"'}.trimMargin(), com.squareup.sqldelight.db.SqlPreparedStatement.Type.INSERT, 2))
-      |        }
       |""".trimMargin())
   }
 
@@ -66,10 +64,10 @@ class MutatorQueryFunctionTest {
 
     val generator = MutatorQueryGenerator(file.namedMutators.first())
 
-    assertThat(generator.value().toString()).isEqualTo("""
-      |private val deleteData: DeleteData by lazy {
+      val propString = generator.value().toString()
+      assertThat(propString).isEqualTo("""
+      |private val deleteData: DeleteData =
       |        DeleteData(database.getConnection().prepareStatement("DELETE FROM data", com.squareup.sqldelight.db.SqlPreparedStatement.Type.DELETE, 0))
-      |        }
       |""".trimMargin())
   }
 
@@ -88,12 +86,10 @@ class MutatorQueryFunctionTest {
     val generator = MutatorQueryGenerator(file.namedMutators.first())
 
     assertThat(generator.value().toString()).isEqualTo("""
-      |private val insertData: InsertData by lazy {
-      |        InsertData(database.getConnection().prepareStatement(""${'"'}
+      |private val insertData: InsertData = InsertData(database.getConnection().prepareStatement(""${'"'}
       |        |INSERT INTO data
       |        |VALUES (?, ?)
       |        ""${'"'}.trimMargin(), com.squareup.sqldelight.db.SqlPreparedStatement.Type.INSERT, 2))
-      |        }
       |""".trimMargin())
   }
 

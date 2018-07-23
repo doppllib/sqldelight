@@ -30,9 +30,9 @@ abstract class Transacter(private val helper: SqlDatabase) {
   protected fun notifyQueries(queryList: QueryList) {
     val transaction = helper.getConnection().currentTransaction()
     if (transaction != null) {
-      transaction.queriesToUpdate.addAll(queryList.queries)
+      transaction.queriesToUpdate.addAll(queryList.queries())
     } else {
-      queryList.queries.forEach { it.notifyResultSetChanged() }
+      queryList.queries().forEach { it.notifyResultSetChanged() }
     }
   }
 

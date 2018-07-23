@@ -4,7 +4,7 @@ apply plugin: 'maven-publish'
 archivesBaseName = 'sqldelight-multiplatform-driver-ios'
 
 ext.artifactId = archivesBaseName
-version = VERSION_NAME
+version = KNARCH_VERSION_NAME
 group = GROUP
 
 ext.bintrayGitUrl = 'https://github.com/touchlab/sqldelight'
@@ -21,6 +21,11 @@ repositories {
     mavenCentral()
     maven { url "https://kotlin.bintray.com/kotlinx" }
     maven { url 'https://oss.sonatype.org/content/repositories/snapshots/' }
+    if(project.hasProperty('j2objcMavenDeploy')) {
+        maven {
+            url project.property('j2objcMavenDeploy')
+        }
+    }
     maven { url 'https://dl.bintray.com/touchlabpublic/kotlin' }
 }
 
@@ -46,7 +51,8 @@ konanArtifacts {
         srcDir '../src/main/kotlinios'
 
         dependencies{
-            artifactsqldelightmultiplatformdriverios "co.touchlab.knarch:knarch:${versions.knarch}"
+            artifactsqldelightmultiplatformdriverios "co.touchlab.knarch:knarch:${versions.knarchDb}"
+            artifactsqldelightmultiplatformdriverios "co.touchlab.knarch.threads:knarchThreads:${versions.knarchThreads}"
             artifactsqldelightmultiplatformdriverios project(":runtime:sqldelight-runtime:native")
         }
 

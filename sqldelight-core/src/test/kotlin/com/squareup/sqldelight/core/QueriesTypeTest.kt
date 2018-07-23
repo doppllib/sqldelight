@@ -48,12 +48,10 @@ class QueriesTypeTest {
       |class DataQueries(private val queryWrapper: QueryWrapper, private val database: SqlDatabase) : Transacter(database) {
       |    internal val selectForId: QueryList = QueryList()
       |
-      |    private val insertData: InsertData by lazy {
-      |            InsertData(database.getConnection().prepareStatement(""${'"'}
+      |    private val insertData: InsertData = InsertData(database.getConnection().prepareStatement(""${'"'}
       |            |INSERT INTO data
       |            |VALUES (?, ?)
       |            ""${'"'}.trimMargin(), SqlPreparedStatement.Type.INSERT, 2))
-      |            }
       |
       |    fun <T : Any> selectForId(id: Long, mapper: (id: Long, value: List?) -> T): Query<T> {
       |        val statement = database.getConnection().prepareStatement(""${'"'}

@@ -1,6 +1,6 @@
 ext.versions = [
     kotlin: '1.2.50',
-    konan: '0.8-dev-2632',
+    konan: '0.8',
     compileSdk: 27,
     idea: '2018.1',
     dokka: '0.9.15',
@@ -11,7 +11,8 @@ ext.versions = [
     schemaCrawler: '14.16.04.01-java7',
     support: '27.1.1',
     sqldelight: '1.0.0-alpha4',
-    knarch: '0.6-alpha1'
+    knarchDb: '0.7-alpha1',
+    knarchThreads: '0.2.0'
 ]
 
 ext.deps = [

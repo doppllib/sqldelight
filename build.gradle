@@ -37,6 +37,11 @@ subprojects {
   }
 
   repositories {
+    if(project.hasProperty('j2objcMavenDeploy')) {
+      maven {
+        url project.property('j2objcMavenDeploy')
+      }
+    }
     mavenCentral()
     google()
     jcenter()

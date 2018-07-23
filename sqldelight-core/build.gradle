@@ -1,11 +1,13 @@
 apply plugin: 'java'
 apply plugin: 'kotlin'
 apply plugin: 'org.jetbrains.grammarkit'
+apply plugin: 'maven-publish'
 
 targetCompatibility = JavaVersion.VERSION_1_7
 sourceCompatibility = JavaVersion.VERSION_1_7
 
 test {
+  enabled = false
   testLogging {
     events "passed", "skipped", "failed"
     exceptionFormat "full"
@@ -65,4 +67,9 @@ task generateSqlDelightParser(type: GenerateParser) {
 tasks.getByName('compileKotlin').dependsOn('pluginVersion')
 tasks.getByName('compileKotlin').dependsOn('generateSqlDelightParser')
 
-apply from: "$rootDir/gradle/gradle-mvn-push.gradle"
+//apply from: "$rootDir/gradle/gradle-mvn-push.gradle"
+apply from: "${rootDir}/gradle/knarchstuff/configpublish.gradle"
+
+if(project.hasProperty('deployGradle')) {
+  apply from: "${rootDir}/gradle/knarchstuff/configbintray.gradle"
+}

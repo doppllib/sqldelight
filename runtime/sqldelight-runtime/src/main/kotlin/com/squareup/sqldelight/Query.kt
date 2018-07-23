@@ -18,6 +18,7 @@ package com.squareup.sqldelight
 import com.squareup.sqldelight.db.SqlPreparedStatement
 import com.squareup.sqldelight.db.SqlResultSet
 import com.squareup.sqldelight.db.use
+import com.squareup.sqldelight.internal.ListenerCollection
 import com.squareup.sqldelight.internal.QueryList
 
 /**
@@ -27,10 +28,10 @@ import com.squareup.sqldelight.internal.QueryList
  */
 open class Query<out RowType : Any>(
   private val statement: SqlPreparedStatement,
-  private val queries: QueryList,
+  queries: QueryList,
   private val mapper: (SqlResultSet) -> RowType
 ) {
-  private val listeners = mutableSetOf<Listener>()
+  private val listenerCollection = ListenerCollection(this, queries)
 
   /**
    * Notify listeners that their current result set is staled.
@@ -39,26 +40,18 @@ open class Query<out RowType : Any>(
    * some false positives but never misses a true positive.
    */
   fun notifyResultSetChanged() {
-    synchronized(listeners) {
-      listeners.forEach(Listener::queryResultsChanged)
-    }
+    listenerCollection.notifyResultSetChanged()
   }
 
   /**
    * Register a listener to be notified of future changes in the result set.
    */
   fun addListener(listener: Listener) {
-    synchronized(listeners) {
-      if (listeners.isEmpty()) queries.addQuery(this)
-      listeners.add(listener)
-    }
+    listenerCollection.addListener(listener)
   }
 
   fun removeListener(listener: Listener) {
-    synchronized(listeners) {
-      listeners.remove(listener)
-      if (listeners.isEmpty()) queries.removeQuery(this)
-    }
+    listenerCollection.removeListener(listener)
   }
 
   /**

@@ -30,11 +30,14 @@ artifacts {
     archives sourcesJar
 }
 
+def art = project.hasProperty("POM_ARTIFACT_ID") ? project.property("POM_ARTIFACT_ID") : (
+        project.ext.has("artifactId") ? project.ext.get("artifactId") : project.name
+)
 publishing {
     publications {
         mavenJava(MavenPublication) {
             from components.java
-            artifactId project.ext.has("artifactId") ? project.ext.get("artifactId") : project.name
+            artifactId art
             artifact sourcesJar
         }
     }

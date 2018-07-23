@@ -1,6 +1,11 @@
 apply plugin: 'kotlin-platform-jvm'
+apply plugin: 'maven-publish'
 
-archivesBaseName = 'sqldelight-runtime'
+archivesBaseName = 'runtime-jdk'
+ext.artifactId = archivesBaseName
+version = VERSION_NAME
+group = GROUP
+ext.bintrayGitUrl = 'https://github.com/touchlab/sqldelight'
 
 dependencies {
   expectedBy project(':runtime:sqldelight-runtime')
@@ -10,4 +15,5 @@ dependencies {
   testImplementation project(':runtime:sqlite-driver')
 }
 
-apply from: "$rootDir/gradle/gradle-mvn-push.gradle"
+apply from: "${rootDir}/gradle/knarchstuff/configpublish.gradle"
+//apply from: "$rootDir/gradle/gradle-mvn-push.gradle"

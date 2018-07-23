@@ -2,7 +2,7 @@ package com.squareup.sqldelight.multiplatform
 
 import co.touchlab.multiplatform.architecture.db.Cursor
 import co.touchlab.multiplatform.architecture.db.sqlite.*
-import co.touchlab.multiplatform.architecture.threads.ThreadLocal
+import co.touchlab.multiplatform.architecture.threads.*
 import com.squareup.sqldelight.Transacter
 import com.squareup.sqldelight.db.SqlDatabase
 import com.squareup.sqldelight.db.SqlDatabaseConnection
@@ -17,7 +17,7 @@ import com.squareup.sqldelight.db.SqlPreparedStatement.Type.UPDATE
 class SqlDelightDatabaseHelper(
         private val openHelper: SQLiteOpenHelper
 ) : SqlDatabase {
-    private val transactions = ThreadLocal<SqlDelightDatabaseConnection.Transaction>()
+    private val transactions = ThreadLocalReference<SqlDelightDatabaseConnection.Transaction>()
 
     override fun getConnection(): SqlDatabaseConnection {
         return SqlDelightDatabaseConnection(openHelper.getWritableDatabase(), transactions)
@@ -31,7 +31,7 @@ class SqlDelightDatabaseHelper(
             private val helper: SqlDatabase.Helper
     ) : PlatformSQLiteOpenHelperCallback(helper.version) {
         override fun onCreate(db: SQLiteDatabase) {
-            helper.onCreate(SqlDelightDatabaseConnection(db, ThreadLocal()))
+            helper.onCreate(SqlDelightDatabaseConnection(db, ThreadLocalReference()))
         }
 
         override fun onUpgrade(
@@ -39,7 +39,7 @@ class SqlDelightDatabaseHelper(
                 oldVersion: Int,
                 newVersion: Int
         ) {
-            helper.onMigrate(SqlDelightDatabaseConnection(db, ThreadLocal()), oldVersion, newVersion)
+            helper.onMigrate(SqlDelightDatabaseConnection(db, ThreadLocalReference()), oldVersion, newVersion)
         }
     }
 }
@@ -68,7 +68,7 @@ private class SqlDelightInitializationHelper(
         private val database: SQLiteDatabase
 ) : SqlDatabase {
     override fun getConnection(): SqlDatabaseConnection {
-        return SqlDelightDatabaseConnection(database, ThreadLocal())
+        return SqlDelightDatabaseConnection(database, ThreadLocalReference())
     }
 
     override fun close() {
@@ -78,7 +78,7 @@ private class SqlDelightInitializationHelper(
 
 private class SqlDelightDatabaseConnection(
         private val database: SQLiteDatabase,
-        private val transactions: ThreadLocal<Transaction>
+        private val transactions: ThreadLocalReference<Transaction>
 ) : SqlDatabaseConnection {
     override fun newTransaction(): Transaction {
         val enclosing = transactions.get()
@@ -115,37 +115,47 @@ private class SqlDelightDatabaseConnection(
             type: SqlPreparedStatement.Type,
             parameters: Int) = when(type) {
         SELECT -> SqlDelightQuery(sql, database)
-        INSERT, UPDATE, DELETE, EXEC -> SqlDelightPreparedStatement(database.compileStatement(sql), type)
+        INSERT, UPDATE, DELETE, EXEC -> SqlDelightPreparedStatement({database.compileStatement(sql)}, type)
     }
 }
 
 private class SqlDelightPreparedStatement(
-        private val statement: SQLiteStatement,
+        private val statementFactory: () -> SQLiteStatement,
         private val type: SqlPreparedStatement.Type
 ) : SqlPreparedStatement {
+    private val statementLocal = ThreadLocalReference<SQLiteStatement>()
+
+    private fun statement():SQLiteStatement{
+        val stmt = statementLocal.get()
+        if(stmt == null){
+            statementLocal.set(statementFactory())
+        }
+        return statementLocal.get()!!
+    }
+
     override fun bindBytes(index: Int, bytes: ByteArray?) {
-        if (bytes == null) statement.bindNull(index) else statement.bindBlob(index, bytes)
+        if (bytes == null) statement().bindNull(index) else statement().bindBlob(index, bytes)
     }
 
     override fun bindLong(index: Int, long: Long?) {
-        if (long == null) statement.bindNull(index) else statement.bindLong(index, long)
+        if (long == null) statement().bindNull(index) else statement().bindLong(index, long)
     }
 
     override fun bindDouble(index: Int, double: Double?) {
-        if (double == null) statement.bindNull(index) else statement.bindDouble(index, double)
+        if (double == null) statement().bindNull(index) else statement().bindDouble(index, double)
     }
 
     override fun bindString(index: Int, string: String?) {
-        if (string == null) statement.bindNull(index) else statement.bindString(index, string)
+        if (string == null) statement().bindNull(index) else statement().bindString(index, string)
     }
 
     override fun executeQuery() = throw UnsupportedOperationException()
 
     override fun execute() = when (type) {
-        INSERT -> statement.executeInsert()
-        UPDATE, DELETE -> statement.executeUpdateDelete().toLong()
+        INSERT -> statement().executeInsert()
+        UPDATE, DELETE -> statement().executeUpdateDelete().toLong()
         EXEC -> {
-            statement.execute()
+            statement().execute()
             1
         }
         SELECT -> throw AssertionError()
@@ -157,22 +167,28 @@ private class SqlDelightQuery(
         private val sql: String,
         private val database: SQLiteDatabase
 ) : SqlPreparedStatement {
-    private val binds: MutableMap<Int, (SQLiteProgram) -> Unit> = LinkedHashMap()
+    private val bindsRef: AtomicRef<List<(SQLiteProgram) -> Unit>> = AtomicRef(ArrayList())
 
+    private fun addBind(action:((SQLiteProgram) -> Unit)){
+        val oldValue = bindsRef.getValue()!!
+        val newMap = ArrayList<(SQLiteProgram) -> Unit>(oldValue)
+        newMap.add(action)
+        bindsRef.compareAndSwapValue(oldValue, newMap)
+    }
     override fun bindBytes(index: Int, bytes: ByteArray?) {
-        binds[index] = { if (bytes == null) it.bindNull(index) else it.bindBlob(index, bytes) }
+        addBind { if (bytes == null) it.bindNull(index) else it.bindBlob(index, bytes) }
     }
 
     override fun bindLong(index: Int, long: Long?) {
-        binds[index] = { if (long == null) it.bindNull(index) else it.bindLong(index, long) }
+        addBind { if (long == null) it.bindNull(index) else it.bindLong(index, long) }
     }
 
     override fun bindDouble(index: Int, double: Double?) {
-        binds[index] = { if (double == null) it.bindNull(index) else it.bindDouble(index, double) }
+        addBind { if (double == null) it.bindNull(index) else it.bindDouble(index, double) }
     }
 
     override fun bindString(index: Int, string: String?) {
-        binds[index] = { if (string == null) it.bindNull(index) else it.bindString(index, string) }
+        addBind { if (string == null) it.bindNull(index) else it.bindString(index, string) }
     }
 
     override fun execute() = throw UnsupportedOperationException()
@@ -183,7 +199,7 @@ private class SqlDelightQuery(
             override fun newCursor(db: SQLiteDatabase,
                                    masterQuery: SQLiteCursorDriver, editTable: String?,
                                    query: SQLiteQuery): Cursor {
-                for (action in binds.values) {
+                for (action in bindsRef.getValue()!!) {
                     action(query)
                 }
 
@@ -211,5 +227,3 @@ private class SqlDelightResultSet(
     override fun getDouble(index: Int) = cursor.getDouble(index)
     override fun close() = cursor.close()
 }
-
-expect fun createSQLiteCursor(masterQuery: SQLiteCursorDriver, query: SQLiteQuery):Cursor
