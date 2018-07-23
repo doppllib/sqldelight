@@ -58,11 +58,11 @@ bintray {
 
     pkg {
         repo = ourRepo
-        name = project.ext.has('artifactId') ? project.ext.get('artifactId') : project.name
+        name = project.hasProperty("POM_ARTIFACT_ID") ? project.property("POM_ARTIFACT_ID") : project.name
         userOrg = ourOrg
 
         licenses = ['Apache-2.0']
-        vcsUrl = project.ext.bintrayGitUrl
+        vcsUrl = 'https://github.com/touchlab/sqldelight'
         version {
             name = version
         }

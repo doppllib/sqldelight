@@ -1,11 +1,6 @@
 apply plugin: 'kotlin-platform-jvm'
-apply plugin: 'maven-publish'
 
-archivesBaseName = 'runtime-jdk'
-ext.artifactId = archivesBaseName
-version = VERSION_NAME
-group = GROUP
-ext.bintrayGitUrl = 'https://github.com/touchlab/sqldelight'
+archivesBaseName = 'sqldelight-runtime'
 
 dependencies {
   expectedBy project(':runtime:sqldelight-runtime')

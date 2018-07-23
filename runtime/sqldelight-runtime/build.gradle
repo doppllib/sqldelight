@@ -16,15 +16,4 @@ task dokkaJavadoc(type: org.jetbrains.dokka.gradle.DokkaTask) {
 }
 
 //apply from: "$rootDir/gradle/gradle-mvn-push.gradle"
-
-//TODO: This stuff exists just to get 'sqldelight-runtime-common' in multiplatform driver dependencies
-//remove with a better method
-apply plugin: 'maven-publish'
-
-ext.artifactId = 'runtime-common'
-version = VERSION_NAME
-group = GROUP
-
-ext.bintrayGitUrl = 'https://github.com/touchlab/sqldelight'
-
-apply from: "https://raw.githubusercontent.com/doppllib/gradlescripts/master/kotlinpublish.gradle"
+apply from: "${rootDir}/gradle/knarchstuff/configpublish.gradle"

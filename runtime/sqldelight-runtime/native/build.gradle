@@ -1,13 +1,6 @@
 apply plugin: 'konan'
-apply plugin: 'maven-publish'
 
 archivesBaseName = 'sqldelight-runtime-native'
-
-ext.artifactId = archivesBaseName
-version = KNARCH_VERSION_NAME
-group = GROUP
-
-ext.bintrayGitUrl = 'https://github.com/touchlab/sqldelight'
 
 apply from: "${rootDir}/gradle/knarchstuff/configpublishnative.gradle"
 

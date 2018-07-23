@@ -15,16 +15,10 @@
  */
 apply plugin: 'com.android.library'
 apply plugin: 'kotlin-platform-android'
-//apply plugin: 'maven-publish'
-apply plugin: 'digital.wup.android-maven-publish'
 
 apply from: "${rootDir}/gradle/knarchstuff/configpublishaar.gradle"
 
 archivesBaseName = 'sqldelight-multiplatform-android'
-
-ext.artifactId = archivesBaseName
-version = KNARCH_VERSION_NAME
-group = GROUP
 
 android {
     compileSdkVersion 27

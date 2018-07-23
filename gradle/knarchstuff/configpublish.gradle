@@ -1,4 +1,4 @@
-
+apply plugin: 'maven-publish'
 
 def pomConfig = {
     licenses {
@@ -10,9 +10,9 @@ def pomConfig = {
     }
     developers {
         developer {
-            id "Squage"
-            name "Squage"
-            organization "Squage"
+            id "Square"
+            name "Square"
+            organization "Square"
             organizationUrl "https://square.com/"
         }
     }
@@ -30,9 +30,10 @@ artifacts {
     archives sourcesJar
 }
 
-def art = project.hasProperty("POM_ARTIFACT_ID") ? project.property("POM_ARTIFACT_ID") : (
-        project.ext.has("artifactId") ? project.ext.get("artifactId") : project.name
-)
+def art = project.hasProperty("POM_ARTIFACT_ID") ? project.property("POM_ARTIFACT_ID") : project.name
+version = VERSION_NAME
+group = GROUP
+
 publishing {
     publications {
         mavenJava(MavenPublication) {
@@ -55,7 +56,7 @@ afterEvaluate {
         publication.pom.withXml {
             def root = asNode()
             root.appendNode('name', project.name)
-            root.appendNode('description', 'SqlDelight Native')
+            root.appendNode('description', 'SqlDelight')
             root.appendNode('url', 'https://github.com/square/sqldelight')
             root.children().last() + pomConfig
         }

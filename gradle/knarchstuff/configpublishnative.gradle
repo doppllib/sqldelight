@@ -13,6 +13,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+apply plugin: 'maven-publish'
+
 def pomConfig = {
     licenses {
         license {
@@ -33,6 +35,10 @@ def pomConfig = {
         url "https://github.com/square/sqldelight"
     }
 }
+
+//def art = project.hasProperty("POM_ARTIFACT_ID") ? project.property("POM_ARTIFACT_ID") : project.name
+version = VERSION_NAME
+group = GROUP
 
 publishing {
     repositories {

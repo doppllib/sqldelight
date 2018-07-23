@@ -1,13 +1,6 @@
 apply plugin: 'kotlin-platform-common'
-apply plugin: 'maven-publish'
 
 archivesBaseName = 'sqldelight-multiplatform-driver'
-
-ext.artifactId = archivesBaseName
-version = KNARCH_VERSION_NAME
-group = GROUP
-
-ext.bintrayGitUrl = 'https://github.com/touchlab/sqldelight'
 
 repositories {
     jcenter()
@@ -45,7 +38,6 @@ if(project.hasProperty('deployCommon')) {
 dependencies {
     implementation deps.kotlin.stdlibCommon
     implementation project(':runtime:sqldelight-runtime')
-//    implementation "${GROUP}:sqldelight-runtime-common:${versions.sqldelight}"
     implementation "co.touchlab.knarch:knarch-common:${versions.knarchDb}"
     implementation "co.touchlab.knarch.threads:threads-common:${versions.knarchThreads}"
 }

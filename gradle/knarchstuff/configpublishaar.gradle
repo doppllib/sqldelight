@@ -13,13 +13,17 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+apply plugin: 'digital.wup.android-maven-publish'
+
+def art = project.hasProperty("POM_ARTIFACT_ID") ? project.property("POM_ARTIFACT_ID") : project.name
+version = VERSION_NAME
+group = GROUP
 
 publishing {
     publications {
         mavenAar(MavenPublication) {
             from components.android
-            artifactId project.ext.has("artifactId") ? project.ext.get("artifactId") : project.name
-//            artifact sourcesJar
+            artifactId art
         }
     }
     repositories {
@@ -28,22 +32,3 @@ publishing {
         }
     }
 }
-
-/*
-bintray {
-    // Get Bintray credential from environment variable
-    user = System.getenv('BINTRAY_USER') // Get bintray User
-    key = System.getenv('BINTRAY_KEY') // Get bintray Secret Key
-    configurations = ['archives']
-    pkg {
-        repo = 'maven'
-        name = project.name
-        userOrg = 'owner-name'
-        licenses = ['Apache-2.0']
-        desc = 'Payment module SDK'
-        websiteUrl = "https://domain.com"
-        publish = true
-    }
-    publications = ['Production', 'Sandbox']
-
-}*/
