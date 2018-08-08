@@ -16,22 +16,9 @@ repositories {
     maven { url 'https://dl.bintray.com/touchlabpublic/kotlin' }
 }
 
-buildscript {
-    repositories {
-        mavenCentral()
-        maven {
-            url  "https://dl.bintray.com/jetbrains/kotlin-native-dependencies"
-        }
-    }
-
-    dependencies {
-        classpath 'com.jfrog.bintray.gradle:gradle-bintray-plugin:1.8.2-SNAPSHOT'
-    }
-}
-
 apply from: "${rootDir}/gradle/knarchstuff/configpublish.gradle"
 
-if(project.hasProperty('deployCommon')) {
+if(project.hasProperty('deployMultiplatformCommon')) {
     apply from: "${rootDir}/gradle/knarchstuff/configbintray.gradle"
 }
 

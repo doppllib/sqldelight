@@ -4,7 +4,7 @@ archivesBaseName = 'sqldelight-multiplatform-driver-ios'
 
 apply from: "${rootDir}/gradle/knarchstuff/configpublishnative.gradle"
 
-if(project.hasProperty('deployIosDriver')) {
+if(project.hasProperty('deployMultiplatformIos')) {
     apply from: "${rootDir}/gradle/knarchstuff/configbintray.gradle"
 }
 
@@ -32,7 +32,6 @@ buildscript {
 
     dependencies {
         classpath "org.jetbrains.kotlin:kotlin-native-gradle-plugin:${versions.konan}"
-        classpath 'com.jfrog.bintray.gradle:gradle-bintray-plugin:1.8.2-SNAPSHOT'
     }
 }
 
@@ -54,5 +53,5 @@ konanArtifacts {
 }
 
 tasks
-        .getByName("build")
+        .getByName("compileKonan")
         .dependsOn(":runtime:sqldelight-runtime:native:build")

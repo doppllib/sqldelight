@@ -17,3 +17,7 @@ task dokkaJavadoc(type: org.jetbrains.dokka.gradle.DokkaTask) {
 
 //apply from: "$rootDir/gradle/gradle-mvn-push.gradle"
 apply from: "${rootDir}/gradle/knarchstuff/configpublish.gradle"
+
+if(project.hasProperty('deployRuntimeCommon')) {
+  apply from: "${rootDir}/gradle/knarchstuff/configbintray.gradle"
+}

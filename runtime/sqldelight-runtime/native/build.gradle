@@ -4,7 +4,7 @@ archivesBaseName = 'sqldelight-runtime-native'
 
 apply from: "${rootDir}/gradle/knarchstuff/configpublishnative.gradle"
 
-if(project.hasProperty('deployIosRuntime')) {
+if(project.hasProperty('deployRuntimeNative')) {
     apply from: "${rootDir}/gradle/knarchstuff/configbintray.gradle"
 }
 
@@ -27,7 +27,6 @@ buildscript {
 
     dependencies {
         classpath "org.jetbrains.kotlin:kotlin-native-gradle-plugin:${versions.konan}"
-        classpath 'com.jfrog.bintray.gradle:gradle-bintray-plugin:1.8.2-SNAPSHOT'
     }
 }
 

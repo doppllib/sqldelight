@@ -12,3 +12,7 @@ dependencies {
 
 apply from: "${rootDir}/gradle/knarchstuff/configpublish.gradle"
 //apply from: "$rootDir/gradle/gradle-mvn-push.gradle"
+
+if(project.hasProperty('deployRuntimeJdk')) {
+  apply from: "${rootDir}/gradle/knarchstuff/configbintray.gradle"
+}

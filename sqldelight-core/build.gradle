@@ -69,6 +69,6 @@ tasks.getByName('compileKotlin').dependsOn('generateSqlDelightParser')
 //apply from: "$rootDir/gradle/gradle-mvn-push.gradle"
 apply from: "${rootDir}/gradle/knarchstuff/configpublish.gradle"
 
-if(project.hasProperty('deployGradle')) {
+if(project.hasProperty('deployCore')) {
   apply from: "${rootDir}/gradle/knarchstuff/configbintray.gradle"
 }
