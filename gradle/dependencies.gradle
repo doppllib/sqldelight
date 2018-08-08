@@ -11,14 +11,15 @@ ext.versions = [
     schemaCrawler: '14.16.04.01-java7',
     support: '27.1.1',
     sqldelight: '1.0.0-alpha4',
-    knarchDb: '0.7-alpha1',
-    knarchThreads: '0.2.0'
+    knarchDb: '0.7-alpha4',
+    knarchThreads: '0.2.3'
 ]
 
 ext.deps = [
     plugins: [
         android: 'com.android.tools.build:gradle:3.2.0-alpha18',
         kotlin: "org.jetbrains.kotlin:kotlin-gradle-plugin:${versions.kotlin}",
+        kotlinNative: "org.jetbrains.kotlin:kotlin-native-gradle-plugin:${versions.konan}",
         dokka: "org.jetbrains.dokka:dokka-gradle-plugin:${versions.dokka}",
         download: "de.undercouch:gradle-download-task:3.4.2",
         intellij: "gradle.plugin.org.jetbrains.intellij.plugins:gradle-intellij-plugin:0.3.1",

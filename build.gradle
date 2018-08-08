@@ -26,6 +26,10 @@ subprojects {
       maven {
         url "https://plugins.gradle.org/m2/"
       }
+      maven {
+        url  "https://dl.bintray.com/jetbrains/kotlin-native-dependencies"
+      }
+      maven { url 'https://dl.bintray.com/touchlabpublic/kotlin' }
       repositories {
         maven { url 'https://jitpack.io' }
       }
@@ -33,6 +37,7 @@ subprojects {
 
     dependencies {
       classpath deps.plugins.kotlin
+      classpath deps.plugins.kotlinNative
       classpath deps.plugins.dokka
       classpath deps.plugins.intellij
       classpath deps.plugins.android

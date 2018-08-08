@@ -1,6 +1,4 @@
-apply plugin: 'konan'
-
-archivesBaseName = 'sqldelight-multiplatform-driver-ios'
+apply plugin: 'kotlin-platform-native'
 
 apply from: "${rootDir}/gradle/knarchstuff/configpublishnative.gradle"
 
@@ -8,50 +6,19 @@ if(project.hasProperty('deployMultiplatformIos')) {
     apply from: "${rootDir}/gradle/knarchstuff/configbintray.gradle"
 }
 
-repositories {
-    jcenter()
-    google()
-    mavenCentral()
-    maven { url "https://kotlin.bintray.com/kotlinx" }
-    maven { url 'https://oss.sonatype.org/content/repositories/snapshots/' }
-    if(project.hasProperty('j2objcMavenDeploy')) {
-        maven {
-            url project.property('j2objcMavenDeploy')
+sourceSets {
+    main {
+        component {
+            baseName.set("sqldelightmultiplatformdriverios")
+            target 'ios_arm32', 'ios_arm64', 'ios_x64', 'macos_x64'
+            outputKinds = [KLIBRARY]
         }
-    }
-    maven { url 'https://dl.bintray.com/touchlabpublic/kotlin' }
-}
-
-buildscript {
-    repositories {
-        mavenCentral()
-        maven {
-            url  "https://dl.bintray.com/jetbrains/kotlin-native-dependencies"
-        }
-    }
-
-    dependencies {
-        classpath "org.jetbrains.kotlin:kotlin-native-gradle-plugin:${versions.konan}"
     }
 }
 
-konan.targets = ['iphone', 'iphone_sim', 'macos_x64']
-
-konanArtifacts {
-    library("sqldelightmultiplatformdriverios"){
-        srcDir '../src/main/kotlin'
-        srcDir '../src/main/kotlinios'
-
-        dependencies{
-            artifactsqldelightmultiplatformdriverios "co.touchlab.knarch:knarch:${versions.knarchDb}"
-            artifactsqldelightmultiplatformdriverios "co.touchlab.knarch.threads:knarchThreads:${versions.knarchThreads}"
-            artifactsqldelightmultiplatformdriverios project(":runtime:sqldelight-runtime:native")
-        }
-
-        enableMultiplatform true
-    }
+dependencies {
+    expectedBy project(':runtime:multiplatform-driver')
+    implementation "co.touchlab.knarch:knarch:${versions.knarchDb}"
+    implementation "co.touchlab.knarch.threads:knarchThreads:${versions.knarchThreads}"
+    implementation project(":runtime:sqldelight-runtime:native")
 }
-
-tasks
-        .getByName("compileKonan")
-        .dependsOn(":runtime:sqldelight-runtime:native:build")
