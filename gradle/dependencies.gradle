@@ -1,5 +1,5 @@
 ext.versions = [
-    kotlin: '1.2.50',
+    kotlin: '1.2.60',
     konan: '0.9-dev-2922',
     compileSdk: 27,
     idea: '2018.1',
@@ -12,7 +12,7 @@ ext.versions = [
     support: '27.1.1',
     sqldelight: '1.0.0-alpha4',
     knarchDb: '0.7-alpha4',
-    knarchThreads: '0.2.3'
+    knarchThreads: '0.3.0'
 ]
 
 ext.deps = [

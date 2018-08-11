@@ -36,7 +36,7 @@ dependencies {
     expectedBy project(':runtime:multiplatform-driver')
     implementation project(':runtime:sqldelight-runtime:jdk')
     implementation "co.touchlab.knarch:knarch-android:${versions.knarchDb}"
-    implementation "co.touchlab.knarch.threads:threads-androidx:${versions.knarchThreads}"
+    implementation "co.touchlab.knarch.threads:threads-android:${versions.knarchThreads}"
 }
 
 buildscript {
