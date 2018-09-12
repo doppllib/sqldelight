@@ -10,14 +10,14 @@ def pomConfig = {
     }
     developers {
         developer {
-            id "Square"
-            name "Square"
-            organization "Square"
-            organizationUrl "https://square.com/"
+            id POM_DEVELOPER_ID
+            name POM_DEVELOPER_NAME
+            organization POM_DEVELOPER_ORG
+            organizationUrl POM_DEVELOPER_URL
         }
     }
     scm {
-        url "https://github.com/square/sqldelight"
+        url POM_SCM_URL
     }
 }
 
@@ -30,7 +30,6 @@ artifacts {
     archives sourcesJar
 }
 
-def art = project.hasProperty("POM_ARTIFACT_ID") ? project.property("POM_ARTIFACT_ID") : project.name
 version = VERSION_NAME
 group = GROUP
 
@@ -38,7 +37,7 @@ publishing {
     publications {
         mavenJava(MavenPublication) {
             from components.java
-            artifactId art
+            artifactId POM_ARTIFACT_ID
             artifact sourcesJar
         }
     }
@@ -52,12 +51,12 @@ publishing {
 
 afterEvaluate {
     project.publishing.publications.forEach { publication ->
-        println("pub.groupId ${publication.groupId}, artifactId ${publication.artifactId}, publication ${publication}")
+//        println("pub.groupId ${publication.groupId}, artifactId ${publication.artifactId}, publication ${publication}")
         publication.pom.withXml {
             def root = asNode()
             root.appendNode('name', project.name)
-            root.appendNode('description', 'SqlDelight')
-            root.appendNode('url', 'https://github.com/square/sqldelight')
+            root.appendNode('description', POM_DESCRIPTION)
+            root.appendNode('url', POM_URL)
             root.children().last() + pomConfig
         }
     }

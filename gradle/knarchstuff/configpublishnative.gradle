@@ -25,18 +25,17 @@ def pomConfig = {
     }
     developers {
         developer {
-            id "Squage"
-            name "Squage"
-            organization "Squage"
-            organizationUrl "https://square.com/"
+            id POM_DEVELOPER_ID
+            name POM_DEVELOPER_NAME
+            organization POM_DEVELOPER_ORG
+            organizationUrl POM_DEVELOPER_URL
         }
     }
     scm {
-        url "https://github.com/square/sqldelight"
+        url POM_SCM_URL
     }
 }
 
-//def art = project.hasProperty("POM_ARTIFACT_ID") ? project.property("POM_ARTIFACT_ID") : project.name
 version = VERSION_NAME
 group = GROUP
 
@@ -50,12 +49,12 @@ publishing {
 
 afterEvaluate {
     project.publishing.publications.forEach { publication ->
-        println("pub.groupId ${publication.groupId}, artifactId ${publication.artifactId}, publication ${publication}")
+//        println("pub.groupId ${publication.groupId}, artifactId ${publication.artifactId}, publication ${publication}")
         publication.pom.withXml {
             def root = asNode()
             root.appendNode('name', project.name)
-            root.appendNode('description', 'SqlDelight Native')
-            root.appendNode('url', 'https://github.com/square/sqldelight')
+            root.appendNode('description', POM_DESCRIPTION)
+            root.appendNode('url', POM_URL)
             root.children().last() + pomConfig
         }
     }

@@ -6,6 +6,7 @@ buildscript {
     maven {
       url  "https://dl.bintray.com/jetbrains/kotlin-native-dependencies"
     }
+    maven { url "https://dl.bintray.com/kotlin/kotlin-dev/" }
   }
   dependencies {
     classpath deps.plugins.download
@@ -30,6 +31,7 @@ subprojects {
         url  "https://dl.bintray.com/jetbrains/kotlin-native-dependencies"
       }
       maven { url 'https://dl.bintray.com/touchlabpublic/kotlin' }
+      maven { url "https://dl.bintray.com/kotlin/kotlin-dev/" }
       repositories {
         maven { url 'https://jitpack.io' }
       }
@@ -51,6 +53,7 @@ subprojects {
         url project.property('j2objcMavenDeploy')
       }
     }
+    maven { url "https://dl.bintray.com/kotlin/kotlin-dev/" }
     mavenCentral()
     google()
     jcenter()

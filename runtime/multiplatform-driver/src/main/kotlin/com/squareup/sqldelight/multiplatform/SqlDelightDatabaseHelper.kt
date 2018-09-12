@@ -170,10 +170,10 @@ private class SqlDelightQuery(
     private val bindsRef: AtomicRef<List<(SQLiteProgram) -> Unit>> = AtomicRef(ArrayList())
 
     private fun addBind(action:((SQLiteProgram) -> Unit)){
-        val oldValue = bindsRef.getValue()!!
-        val newMap = ArrayList<(SQLiteProgram) -> Unit>(oldValue)
+        val oldValue = bindsRef.value
+        val newMap = ArrayList(oldValue)
         newMap.add(action)
-        bindsRef.compareAndSwapValue(oldValue, newMap)
+        bindsRef.value = newMap
     }
     override fun bindBytes(index: Int, bytes: ByteArray?) {
         addBind { if (bytes == null) it.bindNull(index) else it.bindBlob(index, bytes) }
@@ -199,7 +199,7 @@ private class SqlDelightQuery(
             override fun newCursor(db: SQLiteDatabase,
                                    masterQuery: SQLiteCursorDriver, editTable: String?,
                                    query: SQLiteQuery): Cursor {
-                for (action in bindsRef.getValue()!!) {
+                for (action in bindsRef.value) {
                     action(query)
                 }
 
