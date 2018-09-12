@@ -10,9 +10,7 @@ actual class ListenerCollection actual constructor(query: Query<*>, queries:Quer
     private val query = query
 
     actual fun notifyResultSetChanged() {
-        synchronized(listeners) {
-            listeners.value.forEach(Query.Listener::queryResultsChanged)
-        }
+        listeners.value.forEach(Query.Listener::queryResultsChanged)
     }
 
     /**
