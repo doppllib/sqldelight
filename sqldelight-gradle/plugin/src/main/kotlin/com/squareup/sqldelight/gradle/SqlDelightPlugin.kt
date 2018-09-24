@@ -50,7 +50,8 @@ open class SqlDelightPlugin : Plugin<Project> {
     val outputDirectory = File(project.buildDir, "sqldelight")
 
     val sourceSets = project.property("sourceSets") as SourceSetContainer
-    sourceSets.getByName("main").kotlin!!.srcDirs(outputDirectory.toRelativeString(project.projectDir))
+    hackSource("main", sourceSets, outputDirectory, project)
+    hackSource("commonMain", sourceSets, outputDirectory, project)
 
     project.afterEvaluate {
       val packageName = requireNotNull(extension.packageName) { "property packageName must be provided" }
@@ -88,6 +89,15 @@ open class SqlDelightPlugin : Plugin<Project> {
     }
   }
 
+  /**
+   * SQLDelight official should be published soon, so fixing this isn't high on my priority list. Just want to
+   * get the app to build.
+   */
+  private fun hackSource(sourceSet:String, sourceSets:SourceSetContainer, outputDirectory:File, project: Project){
+    val sourceSetInst = sourceSets.findByName(sourceSet)
+    if(sourceSetInst != null)
+      sourceSetInst.kotlin!!.srcDirs(outputDirectory.toRelativeString(project.projectDir))
+  }
   protected fun addMigrationTasks(
     project: Project,
     sourceSet: Collection<File>,

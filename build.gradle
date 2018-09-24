@@ -32,6 +32,12 @@ subprojects {
       }
       maven { url 'https://dl.bintray.com/touchlabpublic/kotlin' }
       maven { url "https://dl.bintray.com/kotlin/kotlin-dev/" }
+      maven { url "https://dl.bintray.com/kotlin/kotlin-eap/" }
+      if(project.hasProperty('j2objcMavenDeploy')) {
+        maven {
+          url project.property('j2objcMavenDeploy')
+        }
+      }
       repositories {
         maven { url 'https://jitpack.io' }
       }
@@ -54,6 +60,12 @@ subprojects {
       }
     }
     maven { url "https://dl.bintray.com/kotlin/kotlin-dev/" }
+    maven { url "https://dl.bintray.com/kotlin/kotlin-eap/" }
+    if(project.hasProperty('j2objcMavenDeploy')) {
+      maven {
+        url project.property('j2objcMavenDeploy')
+      }
+    }
     mavenCentral()
     google()
     jcenter()
