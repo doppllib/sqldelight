@@ -11,8 +11,8 @@ ext.versions = [
     schemaCrawler: '14.16.04.01-java7',
     support: '27.1.1',
     sqldelight: '1.0.0-alpha4',
-    knarchDb: '0.7.2-kn0.9.1-a1',
-    knarchThreads: '0.3.2-kn0.9.1-a2'
+    knarchDb: '0.7.2-kn0.9.1-a3',
+    knarchThreads: '0.3.2-kn0.9.1-a6'
 ]
 
 ext.deps = [
