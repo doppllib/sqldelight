@@ -7,6 +7,7 @@ dependencies {
 
   implementation deps.kotlin.stdlibJs
 
+
   testImplementation deps.kotlin.testJs
 }
 

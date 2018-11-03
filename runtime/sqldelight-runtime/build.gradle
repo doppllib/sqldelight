@@ -6,6 +6,8 @@ archivesBaseName = 'sqldelight-runtime-common'
 dependencies {
   implementation deps.kotlin.stdlibCommon
 
+
+
   testImplementation deps.kotlin.testCommon
   testImplementation deps.kotlin.testCommonAnnotations
 }

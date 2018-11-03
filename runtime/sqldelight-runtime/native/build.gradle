@@ -26,4 +26,5 @@ sourceSets {
 
 dependencies {
     expectedBy project(':runtime:sqldelight-runtime')
+
 }
